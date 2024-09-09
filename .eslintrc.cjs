@@ -8,6 +8,7 @@
 module.exports = {
   root: true,
   parserOptions: {
+    project: true,
     ecmaVersion: "latest",
     sourceType: "module",
     ecmaFeatures: {
@@ -19,16 +20,45 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  settings: {
+    // Help eslint-plugin-tailwindcss to parse Tailwind classes outside of className
+    tailwindcss: {
+      config: "tailwind.config.ts",
+      callees: ["cn", "cva"],
+    },
+  },
+  ignorePatterns: ["!**/.server", "!**/.client", ".eslintrc.cjs"],
 
   // Base config
-  extends: ["eslint:recommended"],
+  extends: [
+    "eslint:recommended",
+    "plugin:drizzle/recommended",
+    "plugin:tailwindcss/recommended",
+  ],
+
+  rules: {
+    "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+    // drizzle
+    "drizzle/enforce-delete-with-where": [
+      "error",
+      {
+        drizzleObjectName: ["db", "tx", "localDb", "serverDb"],
+      },
+    ],
+    "drizzle/enforce-update-with-where": [
+      "error",
+      {
+        drizzleObjectName: ["db", "tx", "localDb", "serverDb"],
+      },
+    ],
+  },
 
   overrides: [
     // React
     {
       files: ["**/*.{js,jsx,ts,tsx}"],
       plugins: ["react", "jsx-a11y"],
+      parser: "@typescript-eslint/parser",
       extends: [
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
@@ -47,6 +77,16 @@ module.exports = {
         "import/resolver": {
           typescript: {},
         },
+      },
+      rules: {
+        "react/prop-types": "off",
+        "react/no-unescaped-entities": "warn",
+        "tailwindcss/no-custom-classname": [
+          "warn",
+          {
+            callees: ["cn", "cva"],
+          },
+        ],
       },
     },
 
@@ -71,6 +111,57 @@ module.exports = {
         "plugin:import/recommended",
         "plugin:import/typescript",
       ],
+      rules: {
+        "@typescript-eslint/no-explicit-any": "warn",
+        // "@typescript-eslint/ban-types": "warn",
+        "prefer-const": "off",
+        "import/no-unresolved": "off",
+        // Note: you must disable the base rule as it can report incorrect errors
+        "no-return-await": "off",
+        "no-unused-vars": "off",
+        "require-await": "off",
+        "@typescript-eslint/return-await": ["error", "in-try-catch"],
+        "@typescript-eslint/consistent-type-exports": "error",
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            prefer: "type-imports",
+            fixStyle: "separate-type-imports",
+          },
+        ],
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            vars: "all",
+            varsIgnorePattern: "^_",
+            args: "all",
+            argsIgnorePattern: "^_",
+            destructuredArrayIgnorePattern: "^_",
+            ignoreRestSiblings: false,
+          },
+        ],
+        // "import/no-cycle": "error", TODO: move on a ci check
+        "import/no-duplicates": "error",
+        "import/order": [
+          "warn",
+          {
+            groups: ["builtin", "external", "internal"],
+            pathGroups: [
+              {
+                pattern: "react",
+                group: "external",
+                position: "before",
+              },
+            ],
+            pathGroupsExcludedImportTypes: ["react"],
+            "newlines-between": "always",
+            alphabetize: {
+              order: "asc",
+              caseInsensitive: true,
+            },
+          },
+        ],
+      },
     },
 
     // Node

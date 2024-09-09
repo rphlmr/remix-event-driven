@@ -1,40 +1,58 @@
-# Welcome to Remix!
+# Real-Time Order Management System
 
-- 📖 [Remix docs](https://remix.run/docs)
+This project demonstrates a cheap pub sub system using Remix, Supabase, and XState.
 
-## Development
 
-Run the dev server:
+## Setup
 
-```shellscript
-npm run dev
-```
+1. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Deployment
+2. Set up the database using Supabase CLI:
+   
+   a. Install Supabase CLI if you haven't already:
+   ```
+   npm install -g supabase
+   ```
 
-First, build your app for production:
+   b. Start the Supabase local development setup:
+   ```
+   supabase start
+   ```
+   This command will set up a local Postgres database and other Supabase services.
 
-```sh
-npm run build
-```
+3. Copy the `.env.example` file to `.env` and update the environment variables:
+   ```
+   cp .env.example .env
+   ```
+   Update the `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_PUBLIC`, and `SUPABASE_SERVICE_ROLE` variables with the values provided by the Supabase CLI after running `supabase start`.
 
-Then run the app in production mode:
+4. Run database migrations:
+   ```
+   npm run db:migration:deploy
+   ```
 
-```sh
-npm start
-```
+5. Start the development server:
+   ```
+   npm run dev
+   ```
 
-Now you'll need to pick a host to deploy it to.
+6. Open your browser and navigate to `http://localhost:3000` to see the application running.
 
-### DIY
+## Features
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
+- Real-time order creation and updates
+- Server-Sent Events (SSE) for live updates
+- XState for managing complex state logic
+- Supabase for real-time database functionality
 
-Make sure to deploy the output of `npm run build`
+## Project Structure
 
-- `build/server`
-- `build/client`
+- `app/routes/_index.tsx`: Main page demo
+- `app/routes/sse.tsx`: Server-Sent Events endpoint
+- `app/modules/events/emitter.ts`: Event emitter using XState
+- `app/database/schema.ts`: Database schema definitions
+- `app/database/db.server.ts`: Database connection setup
 
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
